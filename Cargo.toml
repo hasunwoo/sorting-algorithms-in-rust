@@ -1,0 +1,14 @@
+[package]
+name = "sorting-algorithms"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+rand = "0.8.5"
+criterion = "0.3.6"
+
+[[bench]]
+name = "bench_sorting"
+harness = false
