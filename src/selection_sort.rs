@@ -1,5 +1,5 @@
 pub fn sort<T: Ord>(s: &mut [T]) {
-    if s.len() == 0 {
+    if s.is_empty() {
         return;
     }
     for i in 0..s.len() - 1 {

@@ -2,7 +2,7 @@ use std::mem::ManuallyDrop;
 use std::ptr;
 
 pub fn sort<T: Ord>(s: &mut [T]) {
-    if s.len() > 0 {
+    if !s.is_empty() {
         let mut tmp = ManuallyDrop::new(Vec::new());
         mergesort_recursive(s, &mut tmp, 0, s.len() - 1);
         //code below will not execute when panic. memory leak will happen when panic happens.
@@ -21,7 +21,7 @@ fn mergesort_recursive<T: Ord>(
     start: usize,
     end: usize,
 ) {
-    if end.saturating_sub(start) <= 0 {
+    if end.saturating_sub(start) == 0 {
         return;
     }
     let mid = (start + end) / 2;
@@ -37,7 +37,7 @@ fn merge<T: Ord>(
     mid: usize,
     end: usize,
 ) {
-    assert!(start <= mid && mid + 1 <= end);
+    assert!(start <= mid && mid < end);
 
     unsafe {
         //content of tmp array should not be dropped.

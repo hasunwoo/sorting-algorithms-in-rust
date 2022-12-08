@@ -3,14 +3,14 @@ use std::mem;
 //it would be nice to add speclized version of sort function(T: Copy, Clone).
 //but it is not supported in current version of rust
 pub fn sort<T: Ord + Default>(s: &mut [T]) {
-    if s.len() > 0 {
+    if !s.is_empty() {
         let mut tmp: Vec<T> = Vec::with_capacity(s.len());
         mergesort_recursive(s, &mut tmp, 0, s.len() - 1);
     }
 }
 
 fn mergesort_recursive<T: Ord + Default>(s: &mut [T], tmp: &mut Vec<T>, start: usize, end: usize) {
-    if end.saturating_sub(start) <= 0 {
+    if end.saturating_sub(start) == 0 {
         return;
     }
     let mid = (start + end) / 2;
@@ -26,7 +26,7 @@ fn safe_merge<T: Ord + Default>(
     mid: usize,
     end: usize,
 ) {
-    assert!(start <= mid && mid + 1 <= end);
+    assert!(start <= mid && mid < end);
     tmp.clear();
     let mut i = start;
     let mut j = mid + 1;

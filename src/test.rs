@@ -15,7 +15,7 @@ fn test_random_sorting<T: Ord + Clone>(
     sorted_sample: &[T],
     sort_fn: impl FnOnce(&mut [T]),
 ) -> bool {
-    let mut sample: Vec<T> = sample.iter().cloned().collect();
+    let mut sample: Vec<T> = sample.to_vec();
     sort_fn(&mut sample);
     &sample[..] == sorted_sample
 }

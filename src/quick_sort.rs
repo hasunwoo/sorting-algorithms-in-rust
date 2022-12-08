@@ -1,11 +1,11 @@
 pub fn sort<T: Ord>(s: &mut [T]) {
-    if s.len() > 0 {
+    if !s.is_empty() {
         quicksort_recursive(s, 0, s.len() - 1);
     }
 }
 
 fn quicksort_recursive<T: Ord>(s: &mut [T], start: usize, end: usize) {
-    if end.saturating_sub(start) <= 0 {
+    if end.saturating_sub(start) == 0 {
         return;
     }
     //offset start position because we partition against subslice of original one.
