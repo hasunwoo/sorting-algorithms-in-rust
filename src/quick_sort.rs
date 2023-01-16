@@ -15,6 +15,7 @@ fn quicksort_recursive<T: Ord>(s: &mut [T], start: usize, end: usize) {
 }
 
 //this function will panic if s.len() < 1.
+#[inline(always)]
 fn partition<T: Ord>(s: &mut [T]) -> usize {
     let mut i = 0; //next place to store value smaller then pivot
     for j in 0..s.len() - 1 {

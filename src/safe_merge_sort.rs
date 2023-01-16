@@ -19,6 +19,7 @@ fn mergesort_recursive<T: Ord + Default>(s: &mut [T], tmp: &mut Vec<T>, start: u
     safe_merge(s, tmp, start, mid, end);
 }
 
+#[inline(always)]
 fn safe_merge<T: Ord + Default>(
     s: &mut [T],
     tmp: &mut Vec<T>,

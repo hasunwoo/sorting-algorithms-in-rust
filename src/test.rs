@@ -6,6 +6,7 @@ make_sorting_test!(selection_sort, super::selection_sort::sort);
 make_sorting_test!(quick_sort, super::quick_sort::sort);
 make_sorting_test!(merge_sort, super::merge_sort::sort);
 make_sorting_test!(safe_merge_sort, super::safe_merge_sort::sort);
+make_sorting_test!(heapsort, super::heap_sort::sort);
 
 make_sorting_test!(std_sort_unstable, |s| s.sort_unstable());
 make_sorting_test!(std_sort, |s| s.sort());
@@ -25,9 +26,9 @@ macro_rules! make_sorting_test {
     ($name:ident, $f:expr) => {
         #[test]
         fn $name() {
-            use rand::{Rng, distributions::Standard};
+            use rand::{distributions::Standard, Rng};
             let mut rng = rand::thread_rng();
-            let sample_size = 20;
+            let sample_size = 1000;
             for n in 0..sample_size {
                 let sample: Vec<isize> = (&mut rng).sample_iter(Standard).take(n).collect();
                 let sorted_sample = {
@@ -35,8 +36,11 @@ macro_rules! make_sorting_test {
                     tmp.sort_unstable();
                     tmp
                 };
-                assert!(test_random_sorting(&sample, &sorted_sample, $f), "error while testing array with size of {n}");
+                assert!(
+                    test_random_sorting(&sample, &sorted_sample, $f),
+                    "error while testing array with size of {n}"
+                );
             }
         }
-    }
+    };
 }

@@ -30,6 +30,7 @@ fn mergesort_recursive<T: Ord>(
     merge(s, tmp, start, mid, end);
 }
 
+#[inline(always)]
 fn merge<T: Ord>(
     s: &mut [T],
     tmp: &mut ManuallyDrop<Vec<T>>,
