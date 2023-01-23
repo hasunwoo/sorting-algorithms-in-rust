@@ -1,7 +1,8 @@
 use criterion::{black_box, criterion_group, criterion_main, BatchSize, Criterion};
 use rand::{distributions, Rng};
 use sorting_algorithms::{
-    bubble_sort, heap_sort, insertion_sort, merge_sort, quick_sort, safe_merge_sort, selection_sort,
+    bubble_sort, heap_sort, insertion_sort, intro_sort, merge_sort, quick_sort, safe_merge_sort,
+    selection_sort,
 };
 
 macro_rules! sorting_benchmark_group {
@@ -33,7 +34,8 @@ fn bench_sorting(c: &mut Criterion) {
         ("quick_sort", quick_sort::sort),
         ("merge_sort", merge_sort::sort),
         ("safe_merge_sort", safe_merge_sort::sort),
-        ("heap_sort", heap_sort::sort)
+        ("heap_sort", heap_sort::sort),
+        ("intro_sort", intro_sort::sort)
     );
     sorting_benchmark_group!(
         group_name = "medium_inputs",
@@ -44,7 +46,8 @@ fn bench_sorting(c: &mut Criterion) {
         algorithms = ("quick_sort", quick_sort::sort),
         ("merge_sort", merge_sort::sort),
         ("safe_merge_sort", safe_merge_sort::sort),
-        ("heap_sort", heap_sort::sort)
+        ("heap_sort", heap_sort::sort),
+        ("intro_sort", intro_sort::sort)
     );
 
     sorting_benchmark_group!(
@@ -56,7 +59,8 @@ fn bench_sorting(c: &mut Criterion) {
         algorithms = ("quick_sort", quick_sort::sort),
         ("merge_sort", merge_sort::sort),
         ("safe_merge_sort", safe_merge_sort::sort),
-        ("heap_sort", heap_sort::sort)
+        ("heap_sort", heap_sort::sort),
+        ("intro_sort", intro_sort::sort)
     );
 }
 

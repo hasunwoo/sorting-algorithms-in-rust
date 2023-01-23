@@ -6,7 +6,8 @@ make_sorting_test!(selection_sort, super::selection_sort::sort);
 make_sorting_test!(quick_sort, super::quick_sort::sort);
 make_sorting_test!(merge_sort, super::merge_sort::sort);
 make_sorting_test!(safe_merge_sort, super::safe_merge_sort::sort);
-make_sorting_test!(heapsort, super::heap_sort::sort);
+make_sorting_test!(heap_sort, super::heap_sort::sort);
+make_sorting_test!(intro_sort, super::intro_sort::sort);
 
 make_sorting_test!(std_sort_unstable, |s| s.sort_unstable());
 make_sorting_test!(std_sort, |s| s.sort());
