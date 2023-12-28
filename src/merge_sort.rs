@@ -1,23 +1,33 @@
-use std::mem::ManuallyDrop;
+use std::marker::PhantomData;
+use std::ops::{Deref, DerefMut};
 use std::ptr;
 
 pub fn sort<T: Ord>(s: &mut [T]) {
     if !s.is_empty() {
-        let mut tmp = ManuallyDrop::new(Vec::new());
+        //temp should be dropped safely even it panics on comparsion.
+        let mut tmp: DropGuard<_, TempVecDropHandler<T>> =
+            DropGuard::new(Vec::with_capacity(s.len()));
         mergesort_recursive(s, &mut tmp, 0, s.len() - 1);
-        //code below will not execute when panic. memory leak will happen when panic happens.
-        unsafe {
-            //inner content of tmp should not be dropped.
-            tmp.set_len(0);
-            //drop tmp manually.
-            ManuallyDrop::drop(&mut tmp);
-        }
     }
 }
 
-fn mergesort_recursive<T: Ord>(
+//drop handler to drop temp vector safely without double dropping its elements.
+struct TempVecDropHandler<T> {
+    _phantom: PhantomData<T>,
+}
+
+impl<T> DropHandler<Vec<T>> for TempVecDropHandler<T> {
+    fn on_drop(this: &mut Vec<T>) {
+        unsafe {
+            //SAFETY: setting vector length to zero is safe. It avoids double drop of its elements.
+            this.set_len(0);
+        };
+    }
+}
+
+fn mergesort_recursive<T: Ord, H: DropHandler<Vec<T>>>(
     s: &mut [T],
-    tmp: &mut ManuallyDrop<Vec<T>>,
+    tmp: &mut DropGuard<Vec<T>, H>,
     start: usize,
     end: usize,
 ) {
@@ -31,9 +41,9 @@ fn mergesort_recursive<T: Ord>(
 }
 
 #[inline(always)]
-fn merge<T: Ord>(
+fn merge<T: Ord, H: DropHandler<Vec<T>>>(
     s: &mut [T],
-    tmp: &mut ManuallyDrop<Vec<T>>,
+    tmp: &mut DropGuard<Vec<T>, H>,
     start: usize,
     mid: usize,
     end: usize,
@@ -76,5 +86,45 @@ fn merge<T: Ord>(
     //copy tmp array to original array.
     unsafe {
         ptr::copy_nonoverlapping(tmp.as_mut_ptr(), s.as_mut_ptr().add(start), tmp.len());
+    }
+}
+
+//drop handler is baked into type system. It does not take space to store handler.
+#[repr(transparent)]
+struct DropGuard<T, H: DropHandler<T>> {
+    inner: T,
+    drop_handler: PhantomData<H>, // only used by type system to call handler
+}
+
+impl<T, H: DropHandler<T>> DropGuard<T, H> {
+    fn new(inner: T) -> Self {
+        Self {
+            inner,
+            drop_handler: PhantomData,
+        }
+    }
+}
+
+trait DropHandler<T> {
+    fn on_drop(this: &mut T); //does not takes self or captures environment. can be used by type system at compile time.
+}
+
+impl<T, F: DropHandler<T>> Deref for DropGuard<T, F> {
+    type Target = T;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl<T, F: DropHandler<T>> DerefMut for DropGuard<T, F> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
+}
+
+impl<T, F: DropHandler<T>> Drop for DropGuard<T, F> {
+    fn drop(&mut self) {
+        F::on_drop(self); //call drop handler. this is handled by type system.
     }
 }
